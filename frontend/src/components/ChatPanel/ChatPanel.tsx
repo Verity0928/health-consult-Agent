@@ -65,6 +65,9 @@ export function ChatPanel({ sessionId, llmConfig, onDebugUpdate }: ChatPanelProp
           发送
         </button>
       </form>
+      <p className="hc-disclaimer-footer" data-testid="disclaimer-footer">
+        本应用是一个技术演示，内容基于演示用知识库生成，不构成医疗建议，请以线下就医为准。
+      </p>
     </div>
   );
 }

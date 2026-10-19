@@ -88,3 +88,12 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.hc-disclaimer-footer {
+  margin: 0;
+  padding: 6px 16px 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--hc-text-muted);
+  text-align: center;
+}
