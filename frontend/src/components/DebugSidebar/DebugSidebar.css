@@ -1,0 +1,49 @@
+.hc-debug-sidebar {
+  width: 220px;
+  border-left: 0.5px solid var(--hc-border);
+  background: var(--hc-ai-bg);
+  padding: 16px;
+  transition: width 0.18s ease, padding 0.18s ease;
+  overflow: hidden;
+}
+
+.hc-debug-sidebar-collapsed {
+  width: 0;
+  padding: 16px 0;
+}
+
+.hc-debug-sidebar-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--hc-accent);
+  margin: 0 0 12px;
+}
+
+.hc-debug-sidebar-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.hc-debug-sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.hc-debug-sidebar-label {
+  color: var(--hc-text-muted);
+}
+
+.hc-debug-sidebar-value {
+  color: var(--hc-ai-text);
+}
+
+.hc-debug-sidebar-pill {
+  background: var(--hc-user-bg);
+  color: var(--hc-user-text);
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
