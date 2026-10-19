@@ -1,0 +1,95 @@
+.hc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.hc-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 29, 35, 0.4);
+}
+
+.hc-modal-card {
+  position: relative;
+  background: var(--hc-ai-bg);
+  border-radius: 12px;
+  width: 280px;
+  padding: 20px;
+}
+
+.hc-modal-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--hc-text-muted);
+}
+
+.hc-modal-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--hc-accent);
+  margin: 0 0 14px;
+}
+
+.hc-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hc-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--hc-text-muted);
+}
+
+.hc-modal-field input {
+  border-radius: 8px;
+  border: 0.5px solid var(--hc-border);
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.hc-modal-hint {
+  font-size: 11px;
+  color: var(--hc-text-muted);
+  margin: 2px 0 4px;
+  line-height: 1.5;
+}
+
+.hc-modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.hc-modal-actions button {
+  flex: 1;
+  border-radius: 8px;
+  height: 34px;
+  font-size: 13px;
+  cursor: pointer;
+  border: 0.5px solid var(--hc-border);
+  background: transparent;
+}
+
+.hc-modal-save {
+  background: var(--hc-accent) !important;
+  border: none !important;
+  color: #ffffff;
+}
+
+.hc-modal-status {
+  font-size: 12px;
+  margin: 0;
+}
