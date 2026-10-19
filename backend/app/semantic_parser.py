@@ -50,7 +50,21 @@ route_scope ≠ in_scope 时，sub_type 输出 null。
 - symptom_or_condition_raw：患者提到的症状描述或已确诊病名，无则输出 null
 - exam_item_raw：患者提到的检查/体检项目名称，无则输出 null
 
-严格按 SemanticTags 的 JSON 结构输出，不要输出任何多余文字。
+严格按以下 JSON 结构输出，不要输出任何多余文字、不要输出解释：
+{
+  "route_scope": "in_scope",
+  "sub_type": "lifestyle_education",
+  "population_status": "unknown",
+  "special_population_flags": [],
+  "extracted_entities": {
+    "drug_name_raw": null,
+    "drug_name_normalized": null,
+    "coreference_resolved_query": null,
+    "symptom_or_condition_raw": null,
+    "exam_item_raw": null
+  }
+}
+（以上仅为输出格式示例，实际取值需根据患者消息判断；sub_type 为空时输出 null 而不是省略字段）
 """
 
 

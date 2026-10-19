@@ -1,3 +1,4 @@
+import httpx
 from fastapi.testclient import TestClient
 import main
 
@@ -26,3 +27,25 @@ def test_chat_endpoint_red_flag_short_circuits_without_calling_llm(monkeypatch):
     body = resp.json()
     assert body["status"] == "handoff"
     assert body["debug"]["handoff_reason"] == "red_flag"
+
+
+def test_chat_endpoint_returns_502_on_llm_transport_error(monkeypatch):
+    client = TestClient(main.app)
+
+    class ExplodingLLMClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def complete_json(self, *args, **kwargs):
+            raise httpx.ConnectError("boom")
+
+        def complete_text(self, *args, **kwargs):
+            raise httpx.ConnectError("boom")
+
+    monkeypatch.setattr(main, "LLMClient", ExplodingLLMClient)
+    resp = client.post("/api/chat", json={
+        "session_id": "s2", "message": "哪些食物富含钾",
+        "llm_config": {"base_url": "http://unused.invalid", "api_key": "secret-key", "model": "x"},
+    })
+    assert resp.status_code == 502
+    assert "secret-key" not in resp.text

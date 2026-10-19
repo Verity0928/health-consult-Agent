@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Protocol
+from typing import Optional, Protocol
 
 import httpx
 from pydantic import BaseModel, ValidationError
@@ -24,13 +24,14 @@ def _strip_code_fences(text: str) -> str:
 
 
 class LLMClient:
-    def __init__(self, base_url: str, api_key: str, model: str):
+    def __init__(self, base_url: str, api_key: str, model: str, transport: Optional[httpx.BaseTransport] = None):
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.model = model
+        self._transport = transport
 
     def complete_text(self, system_prompt: str, user_prompt: str) -> str:
-        with httpx.Client(timeout=60) as client:
+        with httpx.Client(timeout=60, transport=self._transport) as client:
             response = client.post(
                 f"{self.base_url}/chat/completions",
                 headers={"Authorization": f"Bearer {self.api_key}"},

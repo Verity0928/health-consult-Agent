@@ -12,6 +12,13 @@ EXPLICIT_DECLINE_KEYWORDS: list[str] = [
     "没有了", "没有", "谢谢", "好的", "就是问问", "不用了", "就这样", "不用", "没事了",
 ]
 
+# Any of these appearing means the message is itself a question, not a
+# decline — a short reply that happens to contain a decline-sounding word
+# (e.g. "好的，孕妇能吃吗") must not be swallowed as "the patient is done".
+QUESTION_MARKERS: list[str] = [
+    "吗", "呢", "？", "?", "怎么", "能不能", "能否", "为什么", "多少", "哪", "什么",
+]
+
 CLOSING_FAREWELL_TEXT = "好的，祝您身体健康，有需要随时再来问我～"
 
 
@@ -22,5 +29,7 @@ def pick_closing_probe(rng: Optional[random.Random] = None) -> str:
 def is_explicit_decline(message: str) -> bool:
     stripped = message.strip()
     if len(stripped) > 10:
+        return False
+    if any(marker in stripped for marker in QUESTION_MARKERS):
         return False
     return any(keyword in stripped for keyword in EXPLICIT_DECLINE_KEYWORDS)
