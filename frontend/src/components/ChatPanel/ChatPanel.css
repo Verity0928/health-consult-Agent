@@ -17,7 +17,7 @@
 .hc-message-bubble {
   max-width: 72%;
   padding: 10px 20px;
-  border-radius: 999px;
+  border-radius: 20px;
   font-size: 14px;
   line-height: 1.5;
   white-space: pre-wrap;
