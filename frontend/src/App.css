@@ -1,0 +1,21 @@
+.hc-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--hc-bg);
+}
+
+.hc-app-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.hc-app-config-prompt {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--hc-text-muted);
+  font-size: 13px;
+}

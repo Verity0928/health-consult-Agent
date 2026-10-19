@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import httpx
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 
 from app.knowledge_base.loader import DEFAULT_KB_DATA_DIR, load_knowledge_base
 from app.llm_client import LLMClient
@@ -39,3 +42,11 @@ def chat(request: ChatTurnRequest) -> PipelineResult:
         ) from exc
     _session_store.save(session)
     return result
+
+
+# Serve the built frontend, if it exists. Guarded so a machine/CI run that
+# hasn't built the frontend yet doesn't break backend import (and therefore
+# every backend test that imports this module).
+_frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"
+if _frontend_dist.is_dir():
+    app.mount("/", StaticFiles(directory=str(_frontend_dist), html=True), name="frontend")
