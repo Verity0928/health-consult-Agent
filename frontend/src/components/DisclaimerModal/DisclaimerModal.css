@@ -1,0 +1,43 @@
+.hc-disclaimer-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.hc-disclaimer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 29, 35, 0.5);
+}
+
+.hc-disclaimer-card {
+  position: relative;
+  background: var(--hc-ai-bg);
+  border-radius: 12px;
+  width: 320px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hc-disclaimer-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--hc-ai-text);
+  margin: 0;
+}
+
+.hc-disclaimer-ack {
+  align-self: flex-end;
+  border-radius: 999px;
+  border: none;
+  background: var(--hc-accent);
+  color: #ffffff;
+  padding: 8px 24px;
+  font-size: 13px;
+  cursor: pointer;
+}
