@@ -64,3 +64,20 @@ class SelfCheckResult(BaseModel):
 class ChatMessage(BaseModel):
     role: Literal["user", "ai"]
     content: str
+
+
+class PipelineDebugInfo(BaseModel):
+    route_scope: Optional[str] = None
+    sub_type: Optional[str] = None
+    population_status: Optional[str] = None
+    hit_status: Optional[str] = None
+    route_decision: Optional[str] = None
+    handoff_reason: Optional[str] = None
+    self_check: Optional[SelfCheckResult] = None
+    retry_count: int = 0
+
+
+class PipelineResult(BaseModel):
+    reply: str
+    status: Literal["answered", "asked", "handoff", "closed"]
+    debug: PipelineDebugInfo
