@@ -1,0 +1,33 @@
+.hc-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 0.5px solid var(--hc-border);
+  background: var(--hc-ai-bg);
+}
+
+.hc-top-bar-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--hc-accent);
+}
+
+.hc-top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hc-top-bar-icon-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 0.5px solid var(--hc-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--hc-text-muted);
+}
