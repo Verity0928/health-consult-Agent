@@ -1,4 +1,5 @@
 import app.retrieval as retrieval
+from app.closing_probe import CLOSING_FAREWELL_TEXT, is_explicit_decline, pick_closing_probe
 from app.dispatcher import decide_route
 from app.generator import generate_answer, generate_ask_once
 from app.llm_client import LLMClientProtocol
@@ -26,6 +27,12 @@ def run_turn(
 ) -> PipelineResult:
     if check_l0(message):
         return _handoff(session, "red_flag", PipelineDebugInfo(), message)
+
+    if session.awaiting_closing_response:
+        session.awaiting_closing_response = False
+        if is_explicit_decline(message):
+            session.closed = True
+            return PipelineResult(reply=CLOSING_FAREWELL_TEXT, status="closed", debug=PipelineDebugInfo())
 
     try:
         tags = parse_semantics(message, session.history, llm)
@@ -81,6 +88,8 @@ def run_turn(
             return _handoff(session, "self_check_failed", debug, message)
 
     debug.self_check = check
+    reply = f"{reply}\n\n{pick_closing_probe()}"
+    session.awaiting_closing_response = True
     session.history.append(ChatMessage(role="user", content=message))
     session.history.append(ChatMessage(role="ai", content=reply))
     return PipelineResult(reply=reply, status="answered", debug=debug)

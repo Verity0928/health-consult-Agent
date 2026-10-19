@@ -14,6 +14,7 @@ class SessionState(BaseModel):
     current_core_entity: Optional[str] = None
     handoff_source: Optional[str] = None
     closed: bool = False
+    awaiting_closing_response: bool = False
 
 
 class SessionStore:
