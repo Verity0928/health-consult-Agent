@@ -8,3 +8,9 @@ export function getOrCreateSessionId(): string {
   }
   return id;
 }
+
+export function startNewSessionId(): string {
+  const id = crypto.randomUUID();
+  sessionStorage.setItem(SESSION_ID_STORAGE_KEY, id);
+  return id;
+}

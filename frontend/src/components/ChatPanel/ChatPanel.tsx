@@ -10,9 +10,10 @@ interface ChatPanelProps {
   sessionId: string;
   llmConfig: LLMConfig;
   onDebugUpdate?: (debug: PipelineDebugInfo | null) => void;
+  onNewSession?: () => void;
 }
 
-export function ChatPanel({ sessionId, llmConfig, onDebugUpdate }: ChatPanelProps) {
+export function ChatPanel({ sessionId, llmConfig, onDebugUpdate, onNewSession }: ChatPanelProps) {
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
   const [draft, setDraft] = useState('');
 
@@ -53,15 +54,22 @@ export function ChatPanel({ sessionId, llmConfig, onDebugUpdate }: ChatPanelProp
           );
         })}
       </div>
+      {state.stuck && (
+        <div className="hc-chat-stuck-bar">
+          <button type="button" onClick={() => onNewSession?.()}>
+            开始新咨询
+          </button>
+        </div>
+      )}
       <form className="hc-chat-input-row" onSubmit={handleSubmit}>
         <input
           type="text"
           role="textbox"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          disabled={state.pending}
+          disabled={state.pending || state.stuck}
         />
-        <button type="submit" disabled={state.pending}>
+        <button type="submit" disabled={state.pending || state.stuck}>
           发送
         </button>
       </form>

@@ -39,6 +39,22 @@ it('SEND_SUCCESS with status "handoff" appends a system-kind message, never ai',
   expect(state.messages[1].kind).toBe('system');
 });
 
+it('SEND_SUCCESS with status "handoff" or "closed" marks the chat stuck', () => {
+  const started = chatReducer(initialChatState, { type: 'SEND_START', id: '1', message: '我想自杀' });
+  const result: PipelineResult = {
+    reply: '已为您转接人工', status: 'handoff', debug: { ...emptyDebug, handoff_reason: 'red_flag' },
+  };
+  const state = chatReducer(started, { type: 'SEND_SUCCESS', id: '2', result });
+  expect(state.stuck).toBe(true);
+});
+
+it('SEND_SUCCESS with status "answered" leaves the chat not stuck', () => {
+  const started = chatReducer(initialChatState, { type: 'SEND_START', id: '1', message: '你好' });
+  const result: PipelineResult = { reply: '回答内容', status: 'answered', debug: emptyDebug };
+  const state = chatReducer(started, { type: 'SEND_SUCCESS', id: '2', result });
+  expect(state.stuck).toBe(false);
+});
+
 it('SEND_SUCCESS with status "closed" appends a system-kind message', () => {
   const started = chatReducer(initialChatState, { type: 'SEND_START', id: '1', message: '没有了谢谢' });
   const result: PipelineResult = { reply: '好的，祝您身体健康～', status: 'closed', debug: emptyDebug };

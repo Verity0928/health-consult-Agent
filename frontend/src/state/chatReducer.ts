@@ -10,6 +10,7 @@ export interface ChatState {
   messages: ChatMessageView[];
   pending: boolean;
   lastDebug: PipelineDebugInfo | null;
+  stuck: boolean;
 }
 
 export type ChatAction =
@@ -17,7 +18,9 @@ export type ChatAction =
   | { type: 'SEND_SUCCESS'; id: string; result: PipelineResult }
   | { type: 'SEND_ERROR'; id: string; error: string };
 
-export const initialChatState: ChatState = { messages: [], pending: false, lastDebug: null };
+export const initialChatState: ChatState = {
+  messages: [], pending: false, lastDebug: null, stuck: false,
+};
 
 const NON_CONVERSATIONAL_STATUSES: ChatStatus[] = ['handoff', 'closed'];
 
@@ -30,11 +33,13 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         pending: true,
       };
     case 'SEND_SUCCESS': {
-      const kind = NON_CONVERSATIONAL_STATUSES.includes(action.result.status) ? 'system' : 'ai';
+      const stuck = NON_CONVERSATIONAL_STATUSES.includes(action.result.status);
+      const kind = stuck ? 'system' : 'ai';
       return {
         messages: [...state.messages, { id: action.id, kind, content: action.result.reply }],
         pending: false,
         lastDebug: action.result.debug,
+        stuck,
       };
     }
     case 'SEND_ERROR':

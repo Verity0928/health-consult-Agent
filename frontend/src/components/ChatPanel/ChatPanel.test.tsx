@@ -25,6 +25,27 @@ it('shows a persistent footer disclaimer below the chat', () => {
   expect(screen.getByTestId('disclaimer-footer')).toHaveTextContent(/技术演示/);
 });
 
+it('after a handoff, disables the input and offers to start a new consultation', async () => {
+  vi.spyOn(client, 'chat').mockResolvedValue({
+    reply: '已为您转接人工', status: 'handoff', debug: { ...emptyDebug, handoff_reason: 'red_flag' },
+  });
+  const onNewSession = vi.fn();
+  const user = userEvent.setup();
+  render(
+    <ChatPanel
+      sessionId="s1"
+      llmConfig={{ base_url: 'a', api_key: 'b', model: 'c' }}
+      onNewSession={onNewSession}
+    />,
+  );
+  await user.type(screen.getByRole('textbox'), '我想自杀');
+  await user.click(screen.getByRole('button', { name: '发送' }));
+  await screen.findByTestId('system-notice');
+  expect(screen.getByRole('textbox')).toBeDisabled();
+  await user.click(screen.getByRole('button', { name: '开始新咨询' }));
+  expect(onNewSession).toHaveBeenCalledOnce();
+});
+
 it('renders a handoff reply as a system notice, never as a message bubble', async () => {
   vi.spyOn(client, 'chat').mockResolvedValue({
     reply: '您描述的情况需要医生进一步介入，已为您转接人工，请稍候。',
