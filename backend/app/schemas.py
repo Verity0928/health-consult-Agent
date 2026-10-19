@@ -81,3 +81,15 @@ class PipelineResult(BaseModel):
     reply: str
     status: Literal["answered", "asked", "handoff", "closed"]
     debug: PipelineDebugInfo
+
+
+class LLMConfig(BaseModel):
+    base_url: str
+    api_key: str
+    model: str
+
+
+class ChatTurnRequest(BaseModel):
+    session_id: str
+    message: str
+    llm_config: LLMConfig
