@@ -8,10 +8,12 @@ it('renders nothing when open is false', () => {
   expect(screen.queryByText('模型设置')).not.toBeInTheDocument();
 });
 
-it('stays open after clicking Save — only the close button closes it', async () => {
+it('saving does not call onClose — only the close button closes it', async () => {
+  const onClose = vi.fn();
   const user = userEvent.setup();
-  render(<SettingsModal open={true} onClose={() => {}} />);
+  render(<SettingsModal open={true} onClose={onClose} />);
   await user.click(screen.getByRole('button', { name: '保存' }));
+  expect(onClose).not.toHaveBeenCalled();
   expect(screen.getByText('模型设置')).toBeVisible();
 });
 
