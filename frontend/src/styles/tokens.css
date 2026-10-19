@@ -1,0 +1,10 @@
+:root {
+  --hc-bg: #F6F6F8;
+  --hc-user-bg: #E3E1EC;
+  --hc-user-text: #44426B;
+  --hc-ai-bg: #FFFFFF;
+  --hc-ai-text: #1A1D23;
+  --hc-accent: #44426B;
+  --hc-border: rgba(26, 29, 35, 0.12);
+  --hc-text-muted: #6B7280;
+}
