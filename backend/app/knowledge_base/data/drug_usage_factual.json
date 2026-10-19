@@ -1,0 +1,72 @@
+[
+  {
+    "id": "drug_usage_001",
+    "sub_type": "drug_usage_factual",
+    "question_topic": "优甲乐要空腹吃吗",
+    "keywords": ["优甲乐", "左甲状腺素", "空腹"],
+    "answer_body": "优甲乐（左甲状腺素钠）说明书建议晨起空腹服用，服药后间隔30-60分钟再吃早饭，这样吸收效果更稳定，尽量每天固定在同一时间段服用。",
+    "caution_population": "孕期用药需要医生调整剂量和监测方案，不宜自行按常规方式服用",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_usage_002",
+    "sub_type": "drug_usage_factual",
+    "question_topic": "二甲双胍饭前还是饭后吃",
+    "keywords": ["二甲双胍", "饭前", "饭后"],
+    "answer_body": "二甲双胍说明书通常建议随餐或餐后服用，这样可以减少恶心、腹泻这类胃肠道不适反应；具体是普通片还是缓释片，服用方式会略有差异，以药品说明书标注为准。",
+    "caution_population": "肾功能异常者使用这类药物需要更谨慎，剂量和适用性需遵医嘱",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_usage_003",
+    "sub_type": "drug_usage_factual",
+    "question_topic": "肠溶片能不能掰开或嚼碎吃",
+    "keywords": ["肠溶片", "掰开", "嚼碎"],
+    "answer_body": "肠溶片外面有一层特殊包衣，是为了让药物避开胃酸、到达肠道才溶解释放，掰开或嚼碎吃会破坏这层包衣，既可能刺激胃黏膜，也可能影响药效的稳定发挥，所以说明书上一般都要求整片吞服。",
+    "caution_population": "儿童、吞咽困难者如确实无法整片吞服，应先咨询医生或药师是否有可替代剂型，不要自行掰开嚼碎",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_usage_004",
+    "sub_type": "drug_usage_factual",
+    "question_topic": "为什么抗生素要吃够疗程不能自行停药",
+    "keywords": ["抗生素", "疗程", "停药"],
+    "answer_body": "症状缓解不代表体内致病菌已经被完全清除，提前停药容易让残留的细菌产生耐药性，也可能导致感染复发，所以说明书和医嘱通常都要求按规定疗程吃完，不要自己觉得好了就停。",
+    "caution_population": "儿童、孕期哺乳期使用抗生素的疗程和品种选择需要医生专门评估",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_usage_005",
+    "sub_type": "drug_usage_factual",
+    "question_topic": "益生菌和抗生素要不要间隔着吃",
+    "keywords": ["益生菌", "抗生素", "间隔"],
+    "answer_body": "抗生素在杀灭致病菌的同时，也会影响益生菌这类活性菌的存活，如果同时服用，益生菌容易被抗生素一并抑制掉，建议间隔2小时以上服用，效果会更好。",
+    "caution_population": "婴幼儿使用益生菌和抗生素的间隔与品种选择建议遵医嘱",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_usage_006",
+    "sub_type": "drug_usage_factual",
+    "question_topic": "维生素C片可以嚼着吃吗",
+    "keywords": ["维生素C", "嚼着吃", "咀嚼片"],
+    "answer_body": "如果是普通维生素C片，说明书上一般没有要求必须整片吞服，嚼碎吃也可以；但如果是肠溶片或缓释片剂型，就不建议嚼碎，具体以外包装和说明书标注的剂型为准。",
+    "caution_population": "肾功能异常者长期大量补充维生素C前建议先咨询医生",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_usage_007",
+    "sub_type": "drug_usage_factual",
+    "question_topic": "漏服了一次降压药该怎么办",
+    "keywords": ["漏服", "降压药", "忘记吃药"],
+    "answer_body": "如果想起来的时间距离下一次服药时间还比较远，一般可以尽快补服；但如果已经接近下一次服药时间了，说明书通常建议直接跳过这一次，按正常时间吃下一顿，不要一次吃两倍剂量来“补回来”。",
+    "caution_population": "老年人、合并多种慢病用药者漏服后更建议直接咨询医生或药师确认",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  }
+]
