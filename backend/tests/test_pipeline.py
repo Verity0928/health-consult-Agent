@@ -1,4 +1,4 @@
-from app.pipeline import run_turn
+from app.pipeline import run_turn, HANDOFF_REPLY_TEXT
 from app.session_state import SessionState
 from app.schemas import KBEntry, ChatMessage, RetrievalResult
 from app.closing_probe import CLOSING_PROBE_POOL, CLOSING_FAREWELL_TEXT
@@ -147,3 +147,91 @@ def test_new_question_after_closing_probe_flows_through_normal_pipeline():
     result = run_turn(session, "血糖怎么监测", llm, _kb())
     assert result.status == "answered"
     assert session.awaiting_closing_response is True  # re-armed by the new ANSWER
+
+
+def test_ask_once_answer_without_drug_keywords_still_resolves_to_answer():
+    # Regression for: retrieval on the ASK_ONCE follow-up turn must not use
+    # only that turn's raw text (which legitimately has zero keyword overlap
+    # with the drug entry) — it must anchor back to the topic's original query.
+    llm = FakeLLMClient()
+    kb = [KBEntry(id="asp", sub_type="drug_contraindication", question_topic="阿司匹林和布洛芬",
+                   keywords=["阿司匹林", "布洛芬"], answer_body="一起吃可能增加胃肠道出血风险",
+                   caution_population="有消化性溃疡病史者风险更高", source_note="演示数据")]
+    session = SessionState(session_id="x")
+
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "drug_contraindication",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {}})
+    llm.queue_text("您方便说下是您自己在吃吗？")
+    result1 = run_turn(session, "阿司匹林和布洛芬能一起吃吗", llm, kb)
+    assert result1.status == "asked"
+
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "drug_contraindication",
+                     "population_status": "identified_general", "special_population_flags": [],
+                     "extracted_entities": {}})
+    llm.queue_text("一起吃可能增加胃肠道出血风险，有消化道溃疡的话更要小心。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    result2 = run_turn(session, "我自己吃的，没有其他情况", llm, kb)
+    assert result2.status == "answered"
+
+
+def test_distinct_lifestyle_topics_do_not_accumulate_topic_turns():
+    # Regression for: topic-switch detection must distinguish genuinely
+    # different subjects under the same sub_type, not just key off free-text
+    # coreference resolution (which stays null for non-drug topics).
+    llm = FakeLLMClient()
+    session = SessionState(session_id="x")
+    topics = [
+        ("脂肪肝有啥症状", "脂肪肝"),
+        ("最近总是便秘怎么办", "便秘"),
+        ("久坐腰疼怎么预防", "腰疼"),
+    ]
+    for message, symptom in topics:
+        llm.queue_json({"route_scope": "in_scope", "sub_type": "lifestyle_education",
+                         "population_status": "unknown", "special_population_flags": [],
+                         "extracted_entities": {"symptom_or_condition_raw": symptom}})
+        run_turn(session, message, llm, [])  # empty KB: every turn misses/hands off, counters still tracked
+    assert session.topic_turns == 1  # each message was its own new topic
+
+
+def test_hard_handoff_reason_locks_session_for_subsequent_turns():
+    llm = FakeLLMClient()
+    session = SessionState(session_id="x")
+    result1 = run_turn(session, "我想自杀", llm, _kb())
+    assert result1.status == "handoff"
+    assert session.handed_off is True
+
+    result2 = run_turn(session, "胃镜检查要不要空腹", llm, _kb())
+    assert result2.status == "handoff"
+    assert result2.reply == HANDOFF_REPLY_TEXT
+
+
+def test_soft_handoff_reason_does_not_lock_session():
+    llm = FakeLLMClient()
+    session = SessionState(session_id="x")
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "lifestyle_education",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {}})
+    result1 = run_turn(session, "一个知识库里完全没有的问题", llm, [])  # miss -> handoff
+    assert result1.status == "handoff"
+    assert session.handed_off is False
+
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "lifestyle_education",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {}})
+    llm.queue_text("含钾比较丰富的有香蕉、橙子等水果。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    result2 = run_turn(session, "哪些食物富含钾", llm, _kb())
+    assert result2.status == "answered"
+
+
+def test_closed_session_returns_fixed_farewell_without_calling_llm():
+    llm = FakeLLMClient()  # nothing queued — must not be called
+    session = SessionState(session_id="x", closed=True)
+    result = run_turn(session, "还有个问题", llm, _kb())
+    assert result.status == "closed"
+    assert result.reply == CLOSING_FAREWELL_TEXT

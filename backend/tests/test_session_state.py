@@ -1,4 +1,4 @@
-from app.session_state import SessionStore, SessionState, update_topic_counters
+from app.session_state import SessionStore, SessionState, update_topic_counters, increment_ask_round
 
 
 def test_store_creates_new_session_on_first_access():
@@ -18,22 +18,32 @@ def test_store_returns_same_session_on_second_access():
 
 
 def test_update_topic_counters_increments_on_same_topic():
-    s = SessionState(session_id="x", current_sub_type="lifestyle_education", current_core_entity=None)
-    update_topic_counters(s, "lifestyle_education", None, is_ask_once=False)
-    assert s.topic_turns == 1
+    s = SessionState(session_id="x", current_sub_type="lifestyle_education", current_core_entity=None,
+                      topic_turns=1)
+    update_topic_counters(s, "lifestyle_education", None)
+    assert s.topic_turns == 2
     assert s.ask_round == 0
+
+
+def test_update_topic_counters_counts_the_opening_message_as_turn_one():
+    # spec: topic_turns counts every patient message under the topic,
+    # including the one that started it — not a 0-based reset.
+    s = SessionState(session_id="x")
+    update_topic_counters(s, "lifestyle_education", None)
+    assert s.topic_turns == 1
 
 
 def test_update_topic_counters_resets_on_topic_switch():
     s = SessionState(session_id="x", current_sub_type="lifestyle_education",
                       current_core_entity=None, topic_turns=3, ask_round=1)
-    update_topic_counters(s, "drug_contraindication", "氯雷他定", is_ask_once=False)
-    assert s.topic_turns == 0
+    update_topic_counters(s, "drug_contraindication", "氯雷他定")
+    assert s.topic_turns == 1
     assert s.ask_round == 0
     assert s.current_sub_type == "drug_contraindication"
 
 
-def test_update_topic_counters_increments_ask_round_on_ask_once():
-    s = SessionState(session_id="x", current_sub_type="drug_contraindication", current_core_entity="氯雷他定")
-    update_topic_counters(s, "drug_contraindication", "氯雷他定", is_ask_once=True)
+def test_increment_ask_round_bumps_only_ask_round():
+    s = SessionState(session_id="x", topic_turns=2, ask_round=0)
+    increment_ask_round(s)
     assert s.ask_round == 1
+    assert s.topic_turns == 2

@@ -3,6 +3,11 @@ from app.schemas import KBEntry, RetrievalResult
 HIT_THRESHOLD = 0.6
 HIT_MARGIN = 0.1
 PARTIAL_THRESHOLD = 0.2
+# Cap the scoring denominator: a long keyword list (synonyms, qualifiers)
+# shouldn't dilute a strong match down below a short, less-specific entry
+# that happens to share one generic keyword. Two matched keywords is
+# already a confident signal for a short demo KB.
+MAX_SCORE_DENOMINATOR = 2
 
 
 def _score(query: str, entry: KBEntry) -> float:
@@ -10,7 +15,8 @@ def _score(query: str, entry: KBEntry) -> float:
         return 0.0
     query_lower = query.lower()
     matched = sum(1 for kw in entry.keywords if kw.lower() in query_lower)
-    return matched / len(entry.keywords)
+    denominator = min(len(entry.keywords), MAX_SCORE_DENOMINATOR)
+    return min(matched, denominator) / denominator
 
 
 def search_knowledge_base(sub_type: str, query: str, entries: list[KBEntry]) -> RetrievalResult:

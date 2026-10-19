@@ -53,7 +53,7 @@
     "id": "checkup_006",
     "sub_type": "health_checkup_explanation",
     "question_topic": "甲状腺功能检查都查哪些指标",
-    "keywords": ["甲状腺功能", "甲功", "TSH"],
+    "keywords": ["甲状腺功能"],
     "answer_body": "甲状腺功能检查常见指标包括促甲状腺激素（TSH）、游离T3、游离T4等，用来综合判断甲状腺是偏亢进还是偏减退，具体数值的临床意义建议结合医生的解读。",
     "caution_population": "",
     "risk_warning": "",

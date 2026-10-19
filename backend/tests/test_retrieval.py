@@ -31,3 +31,17 @@ def test_miss_when_wrong_sub_type_only_available():
     entries = [_entry("a", "lifestyle_education", ["钾"])]
     result = search_knowledge_base("department_triage", "钾", entries)
     assert result.hit_status == "miss"
+
+
+def test_hit_resolves_specific_entry_over_generic_keyword_collision():
+    # A long, specific keyword list sharing one generic term with a short,
+    # unrelated entry must not get diluted below the entry that actually
+    # matches more of the query (uncapped matched/len(keywords) ties these
+    # at 0.5/0.5 and arbitrarily returns the wrong one).
+    entries = [
+        _entry("generic", "department_triage", ["挂什么科", "咳嗽"]),
+        _entry("specific", "department_triage", ["挂什么科", "孩子发烧", "小孩发烧", "儿童发烧"]),
+    ]
+    result = search_knowledge_base("department_triage", "孩子发烧挂什么科", entries)
+    assert result.hit_status == "hit"
+    assert result.matched_entry.id == "specific"
