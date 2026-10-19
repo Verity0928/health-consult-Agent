@@ -1,0 +1,72 @@
+[
+  {
+    "id": "lifestyle_001",
+    "sub_type": "lifestyle_education",
+    "question_topic": "哪些食物富含钾",
+    "keywords": ["钾", "补钾", "富钾食物"],
+    "answer_body": "香蕉、橙子等水果；菠菜、土豆、红薯等蔬菜；豆类、坚果、深海鱼都富含钾，日常饮食搭配着吃就能补上。",
+    "caution_population": "慢性肾病、肾功能不全者需限钾，不宜自行增加富钾食物摄入",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "lifestyle_002",
+    "sub_type": "lifestyle_education",
+    "question_topic": "高血压患者日常饮食要注意什么",
+    "keywords": ["高血压", "饮食", "低盐", "控盐"],
+    "answer_body": "每日食盐摄入建议控制在5克以内，少吃腌制、卤味、加工肉类等隐形高盐食物；多吃新鲜蔬果，适量补充富钾食物有助于平衡钠的作用；同时注意控制体重、规律运动、限制饮酒。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "lifestyle_003",
+    "sub_type": "lifestyle_education",
+    "question_topic": "血糖日常怎么监测",
+    "keywords": ["血糖", "监测", "血糖仪"],
+    "answer_body": "常见的做法是用家用血糖仪测指尖血糖，分空腹血糖和餐后2小时血糖两种，初期建议多测几个时间点（空腹、三餐后）来了解整体波动情况，病情平稳后可以适当减少监测频率。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "lifestyle_004",
+    "sub_type": "lifestyle_education",
+    "question_topic": "脂肪肝有啥症状",
+    "keywords": ["脂肪肝", "症状"],
+    "answer_body": "轻度脂肪肝很多时候没有明显症状，大多是体检才发现的；程度重一些的可能会有右上腹隐隐不适、容易疲劳、食欲变差这些表现。脂肪肝跟体重、饮食、饮酒关系比较大，平时注意控制体重、少吃油腻和高糖食物、适当运动，对改善有帮助。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "lifestyle_005",
+    "sub_type": "lifestyle_education",
+    "question_topic": "长期熬夜对身体有什么影响",
+    "keywords": ["熬夜", "睡眠", "作息"],
+    "answer_body": "长期熬夜会打乱身体的生物钟，容易导致免疫力下降、记忆力和注意力变差、内分泌紊乱，长期还可能增加肥胖、血压血糖异常的风险。建议尽量保持规律作息，成年人每天7-8小时睡眠比较合适。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "lifestyle_006",
+    "sub_type": "lifestyle_education",
+    "question_topic": "办公室久坐如何预防腰椎问题",
+    "keywords": ["久坐", "腰椎", "颈椎", "办公室"],
+    "answer_body": "建议每坐40-60分钟起来活动一下，做做伸展运动；座椅和桌面高度尽量调整到让腰背有支撑、屏幕与视线平齐；平时可以加强腰背核心肌群的锻炼，比如小燕飞、平板支撑这类动作。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "lifestyle_007",
+    "sub_type": "lifestyle_education",
+    "question_topic": "如何预防便秘",
+    "keywords": ["便秘", "预防", "肠胃"],
+    "answer_body": "平时多喝水、多吃富含膳食纤维的蔬菜水果和全谷物，保持适量运动，养成定时排便的习惯都有帮助；尽量不要长期依赖泻药来解决。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  }
+]

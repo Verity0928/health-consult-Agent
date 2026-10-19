@@ -1,0 +1,72 @@
+[
+  {
+    "id": "triage_001",
+    "sub_type": "department_triage",
+    "question_topic": "反复咳嗽挂什么科",
+    "keywords": ["咳嗽", "挂什么科"],
+    "answer_body": "如果同时有恶心呕吐、拉肚子这些，消化内科比较合适；单纯反复咳嗽、咳痰，一般建议先挂呼吸内科看看，具体建议到医院分诊台再确认一下。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "triage_002",
+    "sub_type": "department_triage",
+    "question_topic": "肚子疼挂什么科",
+    "keywords": ["肚子疼", "腹痛", "挂什么科"],
+    "answer_body": "如果同时有恶心呕吐、拉肚子这些，消化内科比较合适；如果疼得比较剧烈、位置固定，也可以直接挂普外科看看要不要排除阑尾炎等情况。具体建议到医院分诊台再确认一下，如果您目前疼痛剧烈难忍，建议直接就近就医或挂急诊。",
+    "caution_population": "",
+    "risk_warning": "疼痛剧烈难忍时建议直接就近就医或挂急诊",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "triage_003",
+    "sub_type": "department_triage",
+    "question_topic": "皮肤反复起红疹挂什么科",
+    "keywords": ["皮疹", "红疹", "皮肤", "挂什么科"],
+    "answer_body": "皮肤起红疹、瘙痒这类问题一般建议挂皮肤科；如果同时伴有呼吸困难、全身肿胀这类过敏反应，需要优先就近急诊处理。",
+    "caution_population": "",
+    "risk_warning": "伴有呼吸困难、全身肿胀需优先就近急诊",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "triage_004",
+    "sub_type": "department_triage",
+    "question_topic": "关节疼痛挂什么科",
+    "keywords": ["关节疼", "关节痛", "挂什么科"],
+    "answer_body": "如果是外伤引起的关节疼痛，建议挂骨科；如果不是外伤、反复出现的关节肿痛，可以考虑挂风湿免疫科看看是否和风湿类疾病有关。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "triage_005",
+    "sub_type": "department_triage",
+    "question_topic": "头晕挂什么科",
+    "keywords": ["头晕", "挂什么科"],
+    "answer_body": "头晕常见于神经内科或耳鼻喉科（比如和内耳前庭有关的眩晕），如果同时有血压明显异常，也可以先挂心血管内科排查一下，具体建议到分诊台说明症状再确认。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "triage_006",
+    "sub_type": "department_triage",
+    "question_topic": "月经不调挂什么科",
+    "keywords": ["月经不调", "挂什么科"],
+    "answer_body": "月经周期、经量异常这类问题一般建议挂妇科。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "triage_007",
+    "sub_type": "department_triage",
+    "question_topic": "孩子发烧挂什么科",
+    "keywords": ["孩子发烧", "小孩发烧", "儿童发烧", "挂什么科"],
+    "answer_body": "儿童出现发烧，建议挂儿科，由儿科医生综合判断病因和处理方式，不建议直接按成人经验处理。",
+    "caution_population": "14岁以下儿童用药与处理方式和成人不同，建议由儿科医生评估",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "drug_contra_001",
+    "sub_type": "drug_contraindication",
+    "question_topic": "吃降压药能不能喝酒",
+    "keywords": ["降压药", "喝酒", "酒精"],
+    "answer_body": "喝酒和吃降压药一起，可能会让血压波动更明显，还可能加重头晕、乏力这些反应；有些降压药（比如血管扩张类的）遇上酒精还可能引起血压骤降。建议吃药期间尽量不喝酒。",
+    "caution_population": "肝肾功能异常者对酒精和药物代谢能力下降，风险更高，更应避免饮酒",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_contra_002",
+    "sub_type": "drug_contraindication",
+    "question_topic": "醉酒后吃抗过敏药会有什么影响",
+    "keywords": ["抗过敏药", "氯雷他定", "喝酒", "醉酒"],
+    "answer_body": "醉酒之后一般不建议马上吃氯雷他定这类抗过敏药——酒精和这类药物都要经肝脏代谢，一起吃可能加重肝脏负担，也可能让嗜睡、头晕这些反应更明显。",
+    "caution_population": "孕期、哺乳期、肝功能异常者使用抗过敏药前更需要谨慎",
+    "risk_warning": "如果过敏情况比较严重（比如喘不上气、全身红肿），建议立即到线下就诊",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_contra_003",
+    "sub_type": "drug_contraindication",
+    "question_topic": "阿司匹林和布洛芬能一起吃吗",
+    "keywords": ["阿司匹林", "布洛芬", "一起吃"],
+    "answer_body": "阿司匹林和布洛芬都属于非甾体抗炎药，一起吃并不会增强效果，反而会增加胃肠道不适、胃出血的风险，一般不建议同时使用。",
+    "caution_population": "有消化性溃疡病史、长期服用抗凝药物者风险更高",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_contra_004",
+    "sub_type": "drug_contraindication",
+    "question_topic": "吃头孢类抗生素能不能喝酒",
+    "keywords": ["头孢", "抗生素", "喝酒", "双硫仑"],
+    "answer_body": "吃头孢类抗生素期间喝酒可能引起“双硫仑样反应”，表现为脸红、心跳加快、恶心呕吐、血压下降等，严重时比较危险，所以吃头孢类药物前后通常建议至少一周内不要饮酒。",
+    "caution_population": "肝功能异常者发生双硫仑样反应的风险更高",
+    "risk_warning": "如果服药后饮酒出现明显不适，建议尽快就医",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_contra_005",
+    "sub_type": "drug_contraindication",
+    "question_topic": "吃华法林期间饮食要注意什么",
+    "keywords": ["华法林", "饮食", "维生素K"],
+    "answer_body": "华法林的效果会受维生素K摄入量影响，像菠菜、西兰花、芥蓝这类深绿色蔬菜维生素K含量较高，不需要完全不吃，但要尽量保持摄入量相对稳定，不要突然大量增减，否则可能影响抗凝效果的稳定性。",
+    "caution_population": "肝肾功能异常、同时合并多种慢病用药者更需要密切关注",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_contra_006",
+    "sub_type": "drug_contraindication",
+    "question_topic": "感冒药和退烧药能一起吃吗",
+    "keywords": ["感冒药", "退烧药", "对乙酰氨基酚", "一起吃"],
+    "answer_body": "很多复方感冒药里本身就含有对乙酰氨基酚（扑热息痛）成分，如果再额外吃单独的退烧药，容易造成重复用药、超过每日安全剂量上限，增加肝脏负担，使用前建议看清楚说明书里的成分表。",
+    "caution_population": "肝功能异常者、儿童用药更需要注意成分重复问题",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "drug_contra_007",
+    "sub_type": "drug_contraindication",
+    "question_topic": "吃奥美拉唑能同时吃钙片吗",
+    "keywords": ["奥美拉唑", "钙片", "一起吃"],
+    "answer_body": "奥美拉唑这类抑酸药会减少胃酸分泌，可能影响碳酸钙这类需要胃酸帮助溶解吸收的钙剂的吸收效果，如果必须同时吃，建议错开服用时间，或者选用枸橼酸钙等受胃酸影响较小的钙剂形式。",
+    "caution_population": "老年人、长期服用抑酸药者更容易出现钙吸收不足的情况",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  }
+]

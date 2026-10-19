@@ -1,0 +1,72 @@
+[
+  {
+    "id": "pre_exam_001",
+    "sub_type": "pre_exam_instructions",
+    "question_topic": "胃镜检查要不要空腹",
+    "keywords": ["胃镜", "空腹"],
+    "answer_body": "胃镜检查一般需要空腹8小时以上，检查前一天晚上8点后就不要再进食了，仅可以少量饮水。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "pre_exam_002",
+    "sub_type": "pre_exam_instructions",
+    "question_topic": "抽血化验前要不要空腹",
+    "keywords": ["抽血", "化验", "空腹"],
+    "answer_body": "大部分常规血液检查（比如血脂、血糖）建议空腹8-12小时再抽血，检查当天早上可以少量饮用白开水，但不要进食，具体以医院预约单上的要求为准。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "pre_exam_003",
+    "sub_type": "pre_exam_instructions",
+    "question_topic": "腹部B超检查前要注意什么",
+    "keywords": ["腹部B超", "B超", "检查前"],
+    "answer_body": "检查肝胆胰脾这类腹部B超通常也需要空腹，一般建议检查前8小时不进食，避免进食后胆囊收缩影响观察效果；如果同时要查膀胱或盆腔，可能还需要适当憋尿，具体以医院通知为准。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "pre_exam_004",
+    "sub_type": "pre_exam_instructions",
+    "question_topic": "肠镜检查前饮食要注意什么",
+    "keywords": ["肠镜", "饮食", "检查前"],
+    "answer_body": "肠镜检查前通常需要提前1-2天开始吃低渣饮食（避免蔬菜水果皮渣、籽类食物），检查前一天按医嘱服用肠道清洁剂，当天空腹，目的是让肠道清洁干净便于观察。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "pre_exam_005",
+    "sub_type": "pre_exam_instructions",
+    "question_topic": "心电图检查前要注意什么",
+    "keywords": ["心电图", "检查前"],
+    "answer_body": "心电图检查不需要空腹，但建议检查前避免剧烈运动、不要喝浓茶咖啡或吸烟，保持平静状态，这样测出来的结果更准确。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "pre_exam_006",
+    "sub_type": "pre_exam_instructions",
+    "question_topic": "做CT检查前要注意什么",
+    "keywords": ["CT", "检查前"],
+    "answer_body": "普通CT平扫一般不需要特殊准备；如果是增强CT（需要打造影剂），通常要求检查前空腹4-6小时，并且需要提前告知医生是否有造影剂过敏史、肾功能异常等情况。",
+    "caution_population": "肾功能异常者使用增强造影剂需要医生提前评估",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "pre_exam_007",
+    "sub_type": "pre_exam_instructions",
+    "question_topic": "妇科B超检查前需要憋尿吗",
+    "keywords": ["妇科B超", "憋尿", "检查前"],
+    "answer_body": "经腹部的妇科B超通常需要适度憋尿，让膀胱充盈便于观察子宫和卵巢；如果是经阴道B超，一般不需要憋尿，具体采用哪种方式以医院安排为准。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  }
+]

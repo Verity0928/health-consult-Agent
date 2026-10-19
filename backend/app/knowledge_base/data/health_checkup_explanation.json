@@ -1,0 +1,72 @@
+[
+  {
+    "id": "checkup_001",
+    "sub_type": "health_checkup_explanation",
+    "question_topic": "这个检查项目是查什么的",
+    "keywords": ["检查项目", "查什么"],
+    "answer_body": "这项检查主要是用来看相关指标是否正常，帮助医生了解身体某方面的情况。具体结果解读建议结合您的其他检查项目一起看，也可以在拿到报告后，再由我为您解读呢。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "checkup_002",
+    "sub_type": "health_checkup_explanation",
+    "question_topic": "转氨酶升高是什么意思",
+    "keywords": ["转氨酶", "升高", "肝功能"],
+    "answer_body": "转氨酶是反映肝细胞是否受损的一项常见指标，升高说明肝细胞可能受到了一定影响，常见原因包括熬夜疲劳、饮酒、脂肪肝、病毒性肝炎等，具体原因需要结合其他检查和病史综合判断。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "checkup_003",
+    "sub_type": "health_checkup_explanation",
+    "question_topic": "尿酸偏高说明什么",
+    "keywords": ["尿酸", "偏高", "痛风"],
+    "answer_body": "尿酸偏高说明体内嘌呤代谢可能存在异常，和高嘌呤饮食（海鲜、动物内脏、啤酒等）、肾脏排泄能力下降都有关系，长期偏高容易增加痛风发作和肾结石的风险，建议注意饮食调整并定期复查。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "checkup_004",
+    "sub_type": "health_checkup_explanation",
+    "question_topic": "血脂四项都是查什么的",
+    "keywords": ["血脂", "血脂四项", "胆固醇"],
+    "answer_body": "血脂四项通常包括总胆固醇、甘油三酯、低密度脂蛋白胆固醇（俗称“坏胆固醇”）、高密度脂蛋白胆固醇（俗称“好胆固醇”），主要用来评估心血管疾病的风险。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "checkup_005",
+    "sub_type": "health_checkup_explanation",
+    "question_topic": "幽门螺杆菌检测是怎么回事",
+    "keywords": ["幽门螺杆菌", "检测", "碳13", "碳14"],
+    "answer_body": "幽门螺杆菌是一种可能定植在胃里的细菌，和慢性胃炎、胃溃疡等问题有关，常见的检测方式是碳13/碳14呼气试验，检测前通常需要空腹，并且近期不能用过抗生素或抑酸药，否则容易影响结果准确性。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "checkup_006",
+    "sub_type": "health_checkup_explanation",
+    "question_topic": "甲状腺功能检查都查哪些指标",
+    "keywords": ["甲状腺功能", "甲功", "TSH"],
+    "answer_body": "甲状腺功能检查常见指标包括促甲状腺激素（TSH）、游离T3、游离T4等，用来综合判断甲状腺是偏亢进还是偏减退，具体数值的临床意义建议结合医生的解读。",
+    "caution_population": "",
+    "risk_warning": "",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  },
+  {
+    "id": "checkup_007",
+    "sub_type": "health_checkup_explanation",
+    "question_topic": "肿瘤标志物升高就是得癌症了吗",
+    "keywords": ["肿瘤标志物", "升高", "癌症"],
+    "answer_body": "肿瘤标志物升高并不等于确诊癌症，炎症、良性增生、吸烟等很多情况都可能导致某些标志物轻度升高，它更多是一个提示性指标，需要结合影像学检查等进一步排查才能明确原因，不用一看到升高就过度紧张。",
+    "caution_population": "",
+    "risk_warning": "指标明显异常或持续升高建议尽快线下就医做进一步排查",
+    "source_note": "整理自公开医学科普资料，仅供技术演示参考，非医疗依据"
+  }
+]
