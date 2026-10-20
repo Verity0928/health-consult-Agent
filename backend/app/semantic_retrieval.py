@@ -3,10 +3,16 @@ import math
 from app.llm_client import LLMClientProtocol
 from app.schemas import KBEntry, RetrievalResult
 
-# Starting point calibrated against synthetic test vectors, not a real
-# embeddings provider (none is available to call from this environment
-# without spending the user's own key) — needs recalibration against a
-# live provider once this is exercised for real.
+# UNVALIDATED placeholder, not a calibrated value: these numbers were
+# picked to make the synthetic test vectors in test_semantic_retrieval.py
+# produce the hit/partial/miss result each test names — the tests were
+# written to fit the thresholds, not the other way around. No real
+# embeddings provider is available to call from this environment without
+# spending the user's own key. Real providers can have very different
+# absolute cosine-similarity ranges (e.g. OpenAI's text-embedding-3-small
+# commonly scores paraphrases in the 0.5-0.75 band, which would mostly
+# land as "partial" here, not "hit") — these MUST be re-measured against
+# whatever provider is actually configured before trusting this path.
 SEMANTIC_HIT_THRESHOLD = 0.75
 SEMANTIC_HIT_MARGIN = 0.05
 SEMANTIC_PARTIAL_THRESHOLD = 0.5

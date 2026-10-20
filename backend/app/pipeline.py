@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 import httpx
@@ -13,6 +14,8 @@ from app.self_check import run_self_check
 from app.semantic_parser import ParseError, parse_semantics
 from app.semantic_retrieval import search_knowledge_base_semantic
 from app.session_state import SessionState, increment_ask_round, update_topic_counters
+
+logger = logging.getLogger(__name__)
 
 HANDOFF_REPLY_TEXT = "您描述的情况需要医生进一步介入，已为您转接人工，请稍候。"
 
@@ -100,7 +103,18 @@ def run_turn(
                 retrieval_result = search_knowledge_base_semantic(
                     tags.sub_type, retrieval_query, kb_entries, llm, base_url, embedding_model
                 )
-            except (httpx.HTTPError, KeyError):
+            # httpx.HTTPError: transport failure / non-2xx status.
+            # KeyError: response is valid JSON but missing "data".
+            # IndexError: "data" is an empty list.
+            # TypeError: "data" is null (iterating None).
+            # ValueError: response body isn't JSON at all (json.JSONDecodeError
+            # is a ValueError subclass) — covers every shape a misbehaving
+            # "OpenAI-compatible" /embeddings endpoint has been seen to return.
+            except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError) as exc:
+                logger.warning(
+                    "Semantic retrieval failed for session %s, falling back to keyword matching: %r",
+                    session.session_id, exc,
+                )
                 retrieval_result = retrieval.search_knowledge_base(tags.sub_type, retrieval_query, kb_entries)
         else:
             retrieval_result = retrieval.search_knowledge_base(tags.sub_type, retrieval_query, kb_entries)

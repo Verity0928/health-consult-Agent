@@ -127,8 +127,14 @@ def test_answered_reply_appends_closing_probe_and_sets_awaiting_flag():
 def test_run_turn_uses_semantic_retrieval_result_when_embedding_model_configured(monkeypatch):
     import app.pipeline as pipeline_module
 
+    calls = []
+
     def fake_semantic(sub_type, query, entries, llm, base_url, embedding_model):
-        return RetrievalResult(hit_status="hit", matched_entry=entries[0])
+        calls.append((sub_type, query, base_url, embedding_model))
+        # Return the entry keyword matching would NOT have picked for this
+        # query ("b" = blood-sugar monitoring, not "a" = potassium) so the
+        # test fails if the keyword path silently ran instead.
+        return RetrievalResult(hit_status="hit", matched_entry=entries[1])
 
     monkeypatch.setattr(pipeline_module, "search_knowledge_base_semantic", fake_semantic)
     llm = FakeLLMClient()
@@ -142,6 +148,8 @@ def test_run_turn_uses_semantic_retrieval_result_when_embedding_model_configured
     session = SessionState(session_id="s1")
     result = run_turn(session, "哪些食物富含钾", llm, _kb(), base_url="https://fake.test/v1", embedding_model="m")
     assert result.status == "answered"
+    assert calls == [("lifestyle_education", "哪些食物富含钾", "https://fake.test/v1", "m")]
+    assert result.debug.hit_status == "hit"
 
 
 def test_run_turn_falls_back_to_keyword_retrieval_when_semantic_path_raises(monkeypatch):
@@ -163,6 +171,45 @@ def test_run_turn_falls_back_to_keyword_retrieval_when_semantic_path_raises(monk
     session = SessionState(session_id="s2")
     result = run_turn(session, "哪些食物富含钾", llm, _kb(), base_url="https://fake.test/v1", embedding_model="m")
     assert result.status == "answered"  # keyword path still finds the "钾" entry and answers normally
+
+
+def _run_turn_with_semantic_raising(monkeypatch, exc):
+    import app.pipeline as pipeline_module
+
+    def fake_semantic(sub_type, query, entries, llm, base_url, embedding_model):
+        raise exc
+
+    monkeypatch.setattr(pipeline_module, "search_knowledge_base_semantic", fake_semantic)
+    llm = FakeLLMClient()
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "lifestyle_education",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {}})
+    llm.queue_text("含钾比较丰富的有香蕉、橙子等水果。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    session = SessionState(session_id="s2b")
+    return run_turn(session, "哪些食物富含钾", llm, _kb(), base_url="https://fake.test/v1", embedding_model="m")
+
+
+def test_run_turn_falls_back_when_embeddings_response_has_empty_data_list(monkeypatch):
+    # A real provider returning {"data": []} makes LLMClient.embed do
+    # `[d["embedding"] for d in response.json()["data"]][0]` -> IndexError.
+    result = _run_turn_with_semantic_raising(monkeypatch, IndexError("list index out of range"))
+    assert result.status == "answered"
+
+
+def test_run_turn_falls_back_when_embeddings_response_has_null_data(monkeypatch):
+    # {"data": null} makes the list comprehension iterate None -> TypeError.
+    result = _run_turn_with_semantic_raising(monkeypatch, TypeError("'NoneType' object is not iterable"))
+    assert result.status == "answered"
+
+
+def test_run_turn_falls_back_when_embeddings_response_is_not_json(monkeypatch):
+    # A 200 response with a non-JSON body makes response.json() raise
+    # json.JSONDecodeError, which is a ValueError subclass.
+    result = _run_turn_with_semantic_raising(monkeypatch, ValueError("Expecting value: line 1 column 1 (char 0)"))
+    assert result.status == "answered"
 
 
 def test_run_turn_never_calls_semantic_retrieval_when_embedding_model_is_blank(monkeypatch):

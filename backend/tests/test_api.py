@@ -18,13 +18,29 @@ def test_chat_endpoint_rejects_malformed_body():
     assert resp.status_code == 422
 
 
-def test_chat_endpoint_accepts_embedding_model_field(monkeypatch):
+def test_chat_endpoint_passes_base_url_and_embedding_model_to_run_turn(monkeypatch):
+    # The red-flag short-circuit never reaches run_turn's retrieval code, so
+    # it can't prove the two new kwargs are actually wired through main.py.
+    # Capture what main.py calls run_turn with instead.
     client = TestClient(main.app)
+    captured = {}
+
+    def fake_run_turn(session, message, llm, kb_entries, **kwargs):
+        captured.update(kwargs)
+        from app.schemas import PipelineDebugInfo, PipelineResult
+        return PipelineResult(reply="ok", status="answered", debug=PipelineDebugInfo())
+
+    monkeypatch.setattr(main, "run_turn", fake_run_turn)
     resp = client.post("/api/chat", json={
-        "session_id": "s5", "message": "我现在呼吸困难",  # red-flag path — short-circuits before any LLM call
-        "llm_config": {"base_url": "http://unused.invalid", "api_key": "x", "model": "x", "embedding_model": "text-embedding-3-small"},
+        "session_id": "s5", "message": "随便问点什么",
+        "llm_config": {
+            "base_url": "http://unused.invalid", "api_key": "x", "model": "x",
+            "embedding_model": "text-embedding-3-small",
+        },
     })
     assert resp.status_code == 200
+    assert captured["base_url"] == "http://unused.invalid"
+    assert captured["embedding_model"] == "text-embedding-3-small"
 
 
 def test_chat_endpoint_red_flag_short_circuits_without_calling_llm(monkeypatch):
