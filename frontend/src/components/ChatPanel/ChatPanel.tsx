@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { chatReducer, initialChatState } from '../../state/chatReducer';
 import { chat, ApiError } from '../../api/client';
 import { MessageBubble } from './MessageBubble';
@@ -13,29 +13,67 @@ interface ChatPanelProps {
   onNewSession?: () => void;
 }
 
+// Messages sent within this window of each other are combined into a
+// single turn, like a real person splitting one thought across a few
+// texts instead of each fragment getting answered on its own.
+export const MERGE_DEBOUNCE_MS = 1500;
+
 export function ChatPanel({ sessionId, llmConfig, onDebugUpdate, onNewSession }: ChatPanelProps) {
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
   const [draft, setDraft] = useState('');
+  const bufferRef = useRef<string[]>([]);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingRef = useRef(false);
 
   useEffect(() => {
     onDebugUpdate?.(state.lastDebug);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.lastDebug]);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const message = draft.trim();
-    if (!message || state.pending) return;
-    setDraft('');
-    const userId = crypto.randomUUID();
-    dispatch({ type: 'SEND_START', id: userId, message });
+  useEffect(() => {
+    pendingRef.current = state.pending;
+  }, [state.pending]);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }, []);
+
+  async function flush() {
+    if (pendingRef.current || bufferRef.current.length === 0) return;
+    const combined = bufferRef.current.join('\n');
+    bufferRef.current = [];
+    pendingRef.current = true;
+    dispatch({ type: 'FLUSH_BEGIN' });
     try {
-      const result = await chat({ session_id: sessionId, message, llm_config: llmConfig });
+      const result = await chat({ session_id: sessionId, message: combined, llm_config: llmConfig });
       dispatch({ type: 'SEND_SUCCESS', id: crypto.randomUUID(), result });
     } catch (err) {
       const text = err instanceof ApiError ? err.message : '网络连接失败，请稍后重试';
       dispatch({ type: 'SEND_ERROR', id: crypto.randomUUID(), error: text });
+    } finally {
+      pendingRef.current = false;
+      if (bufferRef.current.length > 0) {
+        flush();
+      }
     }
+  }
+
+  function scheduleFlush() {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      flush();
+    }, MERGE_DEBOUNCE_MS);
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const message = draft.trim();
+    if (!message || state.stuck) return;
+    setDraft('');
+    dispatch({ type: 'ADD_USER_MESSAGE', id: crypto.randomUUID(), message });
+    bufferRef.current.push(message);
+    scheduleFlush();
   }
 
   return (
@@ -67,9 +105,9 @@ export function ChatPanel({ sessionId, llmConfig, onDebugUpdate, onNewSession }:
           role="textbox"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          disabled={state.pending || state.stuck}
+          disabled={state.stuck}
         />
-        <button type="submit" disabled={state.pending || state.stuck}>
+        <button type="submit" disabled={state.stuck}>
           发送
         </button>
       </form>
