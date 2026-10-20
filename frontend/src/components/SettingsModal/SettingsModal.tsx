@@ -39,9 +39,13 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
   }
 
   function handleSave() {
-    saveLLMConfig(config);
-    setStatus('已保存（关闭请点右上角 ×）');
-    setStatusColor('var(--hc-text-muted)');
+    try {
+      saveLLMConfig(config);
+      onClose();
+    } catch {
+      setStatus('保存失败，请检查浏览器存储设置后重试');
+      setStatusColor('#B5451D');
+    }
   }
 
   return (
