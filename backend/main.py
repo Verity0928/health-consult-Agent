@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import httpx
@@ -9,6 +10,8 @@ from app.llm_client import LLMClient
 from app.pipeline import run_turn
 from app.schemas import ChatTurnRequest, PipelineResult
 from app.session_state import SessionStore
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="健康咨询 Agent Demo")
 
@@ -36,6 +39,15 @@ def chat(request: ChatTurnRequest) -> PipelineResult:
         # wrong base_url/model, or a provider that doesn't speak the
         # OpenAI-compatible schema). Never echo the exception text back —
         # it can carry request details — just a fixed, actionable message.
+        # The real cause (status code, provider's own error body) only ever
+        # goes to the server log, never to the client.
+        if isinstance(exc, httpx.HTTPStatusError):
+            logger.error(
+                "LLM call failed for session %s: status=%s body=%s",
+                request.session_id, exc.response.status_code, exc.response.text[:500],
+            )
+        else:
+            logger.error("LLM call failed for session %s: %r", request.session_id, exc)
         raise HTTPException(
             status_code=502,
             detail="LLM 调用失败，请检查 API 配置（base_url / api_key / model）是否正确",

@@ -1,3 +1,5 @@
+import logging
+
 import httpx
 from fastapi.testclient import TestClient
 import main
@@ -49,3 +51,61 @@ def test_chat_endpoint_returns_502_on_llm_transport_error(monkeypatch):
     })
     assert resp.status_code == 502
     assert "secret-key" not in resp.text
+
+
+def test_chat_endpoint_logs_the_real_llm_error_server_side(monkeypatch, caplog):
+    client = TestClient(main.app)
+
+    class ExplodingLLMClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def complete_json(self, *args, **kwargs):
+            raise httpx.ConnectError("boom")
+
+        def complete_text(self, *args, **kwargs):
+            raise httpx.ConnectError("boom")
+
+    monkeypatch.setattr(main, "LLMClient", ExplodingLLMClient)
+    with caplog.at_level(logging.ERROR, logger="main"):
+        resp = client.post("/api/chat", json={
+            "session_id": "s3", "message": "哪些食物富含钾",
+            "llm_config": {"base_url": "http://unused.invalid", "api_key": "secret-key", "model": "x"},
+        })
+
+    assert resp.status_code == 502
+    assert "secret-key" not in resp.text
+    # The client never sees the real cause, but the server log must have it.
+    assert "ConnectError" in caplog.text
+    assert "boom" in caplog.text
+
+
+def test_chat_endpoint_logs_provider_status_and_body_on_http_error(monkeypatch, caplog):
+    client = TestClient(main.app)
+
+    def raise_status_error(*args, **kwargs):
+        request = httpx.Request("POST", "http://unused.invalid/chat/completions")
+        response = httpx.Response(401, text='{"error":"invalid api key for model x"}', request=request)
+        raise httpx.HTTPStatusError("401 Unauthorized", request=request, response=response)
+
+    class ExplodingLLMClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def complete_json(self, *args, **kwargs):
+            raise_status_error()
+
+        def complete_text(self, *args, **kwargs):
+            raise_status_error()
+
+    monkeypatch.setattr(main, "LLMClient", ExplodingLLMClient)
+    with caplog.at_level(logging.ERROR, logger="main"):
+        resp = client.post("/api/chat", json={
+            "session_id": "s4", "message": "哪些食物富含钾",
+            "llm_config": {"base_url": "http://unused.invalid", "api_key": "secret-key", "model": "x"},
+        })
+
+    assert resp.status_code == 502
+    assert "secret-key" not in resp.text
+    assert "401" in caplog.text
+    assert "invalid api key for model x" in caplog.text
