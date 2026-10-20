@@ -1,5 +1,7 @@
 from typing import Optional
 
+import httpx
+
 import app.retrieval as retrieval
 from app.closing_probe import CLOSING_FAREWELL_TEXT, is_explicit_decline, pick_closing_probe
 from app.dispatcher import decide_route
@@ -9,6 +11,7 @@ from app.safety_guard import check_l0, check_l1
 from app.schemas import ChatMessage, KBEntry, PipelineDebugInfo, PipelineResult, RetrievalResult, SemanticTags
 from app.self_check import run_self_check
 from app.semantic_parser import ParseError, parse_semantics
+from app.semantic_retrieval import search_knowledge_base_semantic
 from app.session_state import SessionState, increment_ask_round, update_topic_counters
 
 HANDOFF_REPLY_TEXT = "您描述的情况需要医生进一步介入，已为您转接人工，请稍候。"
@@ -44,6 +47,8 @@ def run_turn(
     message: str,
     llm: LLMClientProtocol,
     kb_entries: list[KBEntry],
+    base_url: str = "",
+    embedding_model: Optional[str] = None,
 ) -> PipelineResult:
     if session.closed:
         return PipelineResult(reply=CLOSING_FAREWELL_TEXT, status="closed", debug=PipelineDebugInfo())
@@ -90,7 +95,15 @@ def run_turn(
         session.topic_query = message
 
     if tags.sub_type is not None:
-        retrieval_result = retrieval.search_knowledge_base(tags.sub_type, retrieval_query, kb_entries)
+        if embedding_model:
+            try:
+                retrieval_result = search_knowledge_base_semantic(
+                    tags.sub_type, retrieval_query, kb_entries, llm, base_url, embedding_model
+                )
+            except (httpx.HTTPError, KeyError):
+                retrieval_result = retrieval.search_knowledge_base(tags.sub_type, retrieval_query, kb_entries)
+        else:
+            retrieval_result = retrieval.search_knowledge_base(tags.sub_type, retrieval_query, kb_entries)
     else:
         retrieval_result = RetrievalResult(hit_status="miss")
 

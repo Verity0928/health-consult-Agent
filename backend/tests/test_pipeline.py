@@ -124,6 +124,70 @@ def test_answered_reply_appends_closing_probe_and_sets_awaiting_flag():
     assert session.awaiting_closing_response is True
 
 
+def test_run_turn_uses_semantic_retrieval_result_when_embedding_model_configured(monkeypatch):
+    import app.pipeline as pipeline_module
+
+    def fake_semantic(sub_type, query, entries, llm, base_url, embedding_model):
+        return RetrievalResult(hit_status="hit", matched_entry=entries[0])
+
+    monkeypatch.setattr(pipeline_module, "search_knowledge_base_semantic", fake_semantic)
+    llm = FakeLLMClient()
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "lifestyle_education",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {}})
+    llm.queue_text("含钾比较丰富的有香蕉、橙子等水果。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    session = SessionState(session_id="s1")
+    result = run_turn(session, "哪些食物富含钾", llm, _kb(), base_url="https://fake.test/v1", embedding_model="m")
+    assert result.status == "answered"
+
+
+def test_run_turn_falls_back_to_keyword_retrieval_when_semantic_path_raises(monkeypatch):
+    import app.pipeline as pipeline_module
+    import httpx
+
+    def fake_semantic(sub_type, query, entries, llm, base_url, embedding_model):
+        raise httpx.ConnectError("boom")
+
+    monkeypatch.setattr(pipeline_module, "search_knowledge_base_semantic", fake_semantic)
+    llm = FakeLLMClient()
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "lifestyle_education",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {}})
+    llm.queue_text("含钾比较丰富的有香蕉、橙子等水果。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    session = SessionState(session_id="s2")
+    result = run_turn(session, "哪些食物富含钾", llm, _kb(), base_url="https://fake.test/v1", embedding_model="m")
+    assert result.status == "answered"  # keyword path still finds the "钾" entry and answers normally
+
+
+def test_run_turn_never_calls_semantic_retrieval_when_embedding_model_is_blank(monkeypatch):
+    import app.pipeline as pipeline_module
+
+    called = []
+
+    def fake_semantic(*args, **kwargs):
+        called.append(True)
+        raise AssertionError("should not be called")
+
+    monkeypatch.setattr(pipeline_module, "search_knowledge_base_semantic", fake_semantic)
+    llm = FakeLLMClient()
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "lifestyle_education",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {}})
+    llm.queue_text("含钾比较丰富的有香蕉、橙子等水果。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    session = SessionState(session_id="s3")
+    run_turn(session, "哪些食物富含钾", llm, _kb())  # no base_url/embedding_model passed — defaults
+    assert called == []
+
+
 def test_explicit_decline_after_closing_probe_closes_session_without_llm_call():
     llm = FakeLLMClient()  # nothing queued — must not be called
     session = SessionState(session_id="x", awaiting_closing_response=True)

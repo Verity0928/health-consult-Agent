@@ -33,7 +33,10 @@ def chat(request: ChatTurnRequest) -> PipelineResult:
         model=request.llm_config.model,
     )
     try:
-        result = run_turn(session, request.message, llm, _kb_entries)
+        result = run_turn(
+            session, request.message, llm, _kb_entries,
+            base_url=request.llm_config.base_url, embedding_model=request.llm_config.embedding_model,
+        )
     except (httpx.HTTPError, KeyError) as exc:
         # Transport failure or a response shape we didn't expect (e.g. a
         # wrong base_url/model, or a provider that doesn't speak the

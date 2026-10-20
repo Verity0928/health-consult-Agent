@@ -18,6 +18,15 @@ def test_chat_endpoint_rejects_malformed_body():
     assert resp.status_code == 422
 
 
+def test_chat_endpoint_accepts_embedding_model_field(monkeypatch):
+    client = TestClient(main.app)
+    resp = client.post("/api/chat", json={
+        "session_id": "s5", "message": "我现在呼吸困难",  # red-flag path — short-circuits before any LLM call
+        "llm_config": {"base_url": "http://unused.invalid", "api_key": "x", "model": "x", "embedding_model": "text-embedding-3-small"},
+    })
+    assert resp.status_code == 200
+
+
 def test_chat_endpoint_red_flag_short_circuits_without_calling_llm(monkeypatch):
     client = TestClient(main.app)
     # LLMClient would fail on a real network call; red-flag path must never reach it
