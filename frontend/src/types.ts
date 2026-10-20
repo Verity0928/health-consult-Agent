@@ -2,6 +2,7 @@ export interface LLMConfig {
   base_url: string;
   api_key: string;
   model: string;
+  embedding_model?: string;
 }
 
 export interface ChatTurnRequest {

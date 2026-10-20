@@ -9,7 +9,7 @@ interface SettingsModalProps {
   onClose: () => void;
 }
 
-const EMPTY_CONFIG: LLMConfig = { base_url: '', api_key: '', model: '' };
+const EMPTY_CONFIG: LLMConfig = { base_url: '', api_key: '', model: '', embedding_model: '' };
 
 export function SettingsModal({ open, onClose }: SettingsModalProps) {
   const [config, setConfig] = useState<LLMConfig>(EMPTY_CONFIG);
@@ -89,6 +89,18 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
               onChange={(e) => setConfig({ ...config, model: e.target.value })}
             />
           </label>
+          <label className="hc-modal-field">
+            <span>Embedding Model</span>
+            <input
+              type="text"
+              placeholder="text-embedding-3-small"
+              value={config.embedding_model ?? ''}
+              onChange={(e) => setConfig({ ...config, embedding_model: e.target.value })}
+            />
+          </label>
+          <p className="hc-modal-hint">
+            填写后将启用语义检索，问法更灵活、命中率更高；若所选服务商不支持 Embeddings 接口，会自动回退到关键词检索，不影响正常使用。
+          </p>
           <p className="hc-modal-hint">
             Key 仅在您发送消息时转发给上面填写的地址，不会保存在服务器，也不会被记录日志。
           </p>

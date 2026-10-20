@@ -9,6 +9,21 @@ it('renders nothing when open is false', () => {
   expect(screen.queryByText('模型设置')).not.toBeInTheDocument();
 });
 
+it('renders an optional Embedding Model field with a hint about the keyword fallback', () => {
+  render(<SettingsModal open={true} onClose={() => {}} />);
+  expect(screen.getByText('Embedding Model')).toBeInTheDocument();
+  expect(screen.getByText(/回退到关键词检索/)).toBeInTheDocument();
+});
+
+it('includes embedding_model when saving', async () => {
+  const user = userEvent.setup();
+  render(<SettingsModal open={true} onClose={() => {}} />);
+  await user.type(screen.getByPlaceholderText('text-embedding-3-small'), 'my-embed-model');
+  await user.click(screen.getByRole('button', { name: '保存' }));
+  const saved = JSON.parse(sessionStorage.getItem('health-consult-llm-config') ?? '{}');
+  expect(saved.embedding_model).toBe('my-embed-model');
+});
+
 it('a successful save closes the modal', async () => {
   const onClose = vi.fn();
   const user = userEvent.setup();
