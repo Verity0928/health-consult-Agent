@@ -1,11 +1,11 @@
-import { chat, ApiError } from '../../api/client';
+import { pingConnection, ApiError } from '../../api/client';
 import type { LLMConfig } from '../../types';
 
 export type ConnectionTestResult = { ok: true } | { ok: false; message: string };
 
 export async function testConnection(config: LLMConfig): Promise<ConnectionTestResult> {
   try {
-    await chat({ session_id: 'connection-test', message: '连接测试', llm_config: config });
+    await pingConnection(config);
     return { ok: true };
   } catch (err) {
     if (err instanceof ApiError) {

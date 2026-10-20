@@ -18,6 +18,70 @@ def test_chat_endpoint_rejects_malformed_body():
     assert resp.status_code == 422
 
 
+def test_test_connection_endpoint_returns_ok_on_success(monkeypatch):
+    client = TestClient(main.app)
+
+    class WorkingLLMClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def complete_text(self, *args, **kwargs):
+            return "ok"
+
+    monkeypatch.setattr(main, "LLMClient", WorkingLLMClient)
+    resp = client.post("/api/test-connection", json={
+        "base_url": "http://unused.invalid", "api_key": "x", "model": "x",
+    })
+    assert resp.status_code == 200
+    assert resp.json() == {"status": "ok"}
+
+
+def test_test_connection_endpoint_never_touches_session_state_or_runs_the_pipeline(monkeypatch):
+    # A single complete_text call is enough to prove connectivity; it must
+    # not reach parse_semantics, retrieval, generate_answer or self_check.
+    client = TestClient(main.app)
+    calls = []
+
+    class RecordingLLMClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def complete_text(self, *args, **kwargs):
+            calls.append("complete_text")
+            return "ok"
+
+        def complete_json(self, *args, **kwargs):
+            calls.append("complete_json")  # would be called by parse_semantics/self_check
+            raise AssertionError("should not be called")
+
+    monkeypatch.setattr(main, "LLMClient", RecordingLLMClient)
+    resp = client.post("/api/test-connection", json={
+        "base_url": "http://unused.invalid", "api_key": "x", "model": "x",
+    })
+    assert resp.status_code == 200
+    assert calls == ["complete_text"]
+
+
+def test_test_connection_endpoint_returns_502_and_logs_on_failure(monkeypatch, caplog):
+    client = TestClient(main.app)
+
+    class ExplodingLLMClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def complete_text(self, *args, **kwargs):
+            raise httpx.ConnectError("boom")
+
+    monkeypatch.setattr(main, "LLMClient", ExplodingLLMClient)
+    with caplog.at_level(logging.ERROR, logger="main"):
+        resp = client.post("/api/test-connection", json={
+            "base_url": "http://unused.invalid", "api_key": "secret-key", "model": "x",
+        })
+    assert resp.status_code == 502
+    assert "secret-key" not in resp.text
+    assert "ConnectError" in caplog.text
+
+
 def test_chat_endpoint_passes_base_url_and_embedding_model_to_run_turn(monkeypatch):
     # The red-flag short-circuit never reaches run_turn's retrieval code, so
     # it can't prove the two new kwargs are actually wired through main.py.

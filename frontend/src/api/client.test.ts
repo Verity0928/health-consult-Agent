@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { chat, health, ApiError } from './client';
+import { chat, health, pingConnection, ApiError } from './client';
 import type { ChatTurnRequest } from '../types';
 
 beforeEach(() => vi.restoreAllMocks());
@@ -42,4 +42,22 @@ it('chat falls back to a generic message when the error body has no detail', asy
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }));
   await expect(chat({ session_id: 's1', message: 'x', llm_config: { base_url: 'a', api_key: 'b', model: 'c' } }))
     .rejects.toBeInstanceOf(ApiError);
+});
+
+it('pingConnection posts the llm config to /api/test-connection', async () => {
+  const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ status: 'ok' }) });
+  vi.stubGlobal('fetch', fetchMock);
+  const config = { base_url: 'https://x', api_key: 'k', model: 'm' };
+  await pingConnection(config);
+  expect(fetchMock).toHaveBeenCalledWith('/api/test-connection', expect.objectContaining({
+    method: 'POST', body: JSON.stringify(config),
+  }));
+});
+
+it('pingConnection throws ApiError with the backend detail message on a non-2xx response', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+    ok: false, status: 502, json: async () => ({ detail: 'LLM 调用失败，请检查 API 配置' }),
+  }));
+  await expect(pingConnection({ base_url: 'a', api_key: 'b', model: 'c' }))
+    .rejects.toThrow('LLM 调用失败，请检查 API 配置');
 });
