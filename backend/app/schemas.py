@@ -87,6 +87,7 @@ class LLMConfig(BaseModel):
     base_url: str
     api_key: str
     model: str
+    embedding_model: str = ""
 
 
 class ChatTurnRequest(BaseModel):

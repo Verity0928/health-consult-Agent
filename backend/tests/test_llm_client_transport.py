@@ -53,3 +53,26 @@ def test_complete_text_raises_on_http_error_status():
     client = _client(handler)
     with pytest.raises(httpx.HTTPStatusError):
         client.complete_text("sys", "user")
+
+
+def test_embed_posts_input_and_returns_vectors():
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["url"] = str(request.url)
+        captured["body"] = request.read()
+        return httpx.Response(200, json={"data": [{"embedding": [0.1, 0.2]}, {"embedding": [0.3, 0.4]}]})
+
+    client = _client(handler)
+    result = client.embed(["foo", "bar"], model="text-embedding-3-small")
+    assert result == [[0.1, 0.2], [0.3, 0.4]]
+    assert captured["url"] == "https://fake.test/v1/embeddings"
+
+
+def test_embed_raises_http_status_error_on_failure():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(404, json={"error": "not found"})
+
+    client = _client(handler)
+    with pytest.raises(httpx.HTTPStatusError):
+        client.embed(["foo"], model="text-embedding-3-small")

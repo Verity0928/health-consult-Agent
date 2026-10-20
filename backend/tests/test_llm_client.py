@@ -28,3 +28,11 @@ def test_fake_llm_client_text_returns_queued_text():
     client = FakeLLMClient()
     client.queue_text("hello")
     assert client.complete_text("sys", "user") == "hello"
+
+
+def test_fake_llm_client_embed_returns_queued_vectors_and_logs_the_call():
+    client = FakeLLMClient()
+    client.queue_embeddings([[1.0, 0.0], [0.0, 1.0]])
+    result = client.embed(["a", "b"], model="m")
+    assert result == [[1.0, 0.0], [0.0, 1.0]]
+    assert client.embed_calls == [(["a", "b"], "m")]

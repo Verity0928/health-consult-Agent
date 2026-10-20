@@ -15,6 +15,8 @@ class LLMClientProtocol(Protocol):
 
     def complete_text(self, system_prompt: str, user_prompt: str) -> str: ...
 
+    def embed(self, texts: list[str], model: str) -> list[list[float]]: ...
+
 
 _CODE_FENCE_RE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 
@@ -45,6 +47,16 @@ class LLMClient:
             )
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
+
+    def embed(self, texts: list[str], model: str) -> list[list[float]]:
+        with httpx.Client(timeout=60, transport=self._transport) as client:
+            response = client.post(
+                f"{self.base_url}/embeddings",
+                headers={"Authorization": f"Bearer {self.api_key}"},
+                json={"model": model, "input": texts},
+            )
+            response.raise_for_status()
+            return [d["embedding"] for d in response.json()["data"]]
 
     def complete_json(self, system_prompt: str, user_prompt: str, schema: type[BaseModel]) -> BaseModel:
         raw = self.complete_text(system_prompt, user_prompt)
