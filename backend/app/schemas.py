@@ -9,6 +9,7 @@ class ExtractedEntities(BaseModel):
     drug_name_normalized: Optional[str] = None
     coreference_resolved_query: Optional[str] = None
     symptom_or_condition_raw: Optional[str] = None
+    symptom_or_condition_normalized: Optional[str] = None
     exam_item_raw: Optional[str] = None
 
 

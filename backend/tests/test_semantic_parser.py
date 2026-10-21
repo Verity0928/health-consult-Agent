@@ -58,3 +58,25 @@ def test_parse_semantics_keeps_the_llms_guess_for_an_unrecognized_drug_name():
     })
     tags = parse_semantics("某种没听过的药怎么吃", [], llm)
     assert tags.extracted_entities.drug_name_normalized == "模型自己猜的名字"
+
+
+def test_parse_semantics_normalizes_a_recognized_symptom_phrase():
+    llm = FakeLLMClient()
+    llm.queue_json({
+        "route_scope": "in_scope", "sub_type": "department_triage",
+        "population_status": "unknown", "special_population_flags": [],
+        "extracted_entities": {"symptom_or_condition_raw": "头疼"},
+    })
+    tags = parse_semantics("我头疼，挂什么科", [], llm)
+    assert tags.extracted_entities.symptom_or_condition_normalized == "头痛"
+
+
+def test_parse_semantics_leaves_normalized_symptom_none_when_unrecognized():
+    llm = FakeLLMClient()
+    llm.queue_json({
+        "route_scope": "in_scope", "sub_type": "department_triage",
+        "population_status": "unknown", "special_population_flags": [],
+        "extracted_entities": {"symptom_or_condition_raw": "一种没见过的说法"},
+    })
+    tags = parse_semantics("一种没见过的说法，挂什么科", [], llm)
+    assert tags.extracted_entities.symptom_or_condition_normalized is None

@@ -397,3 +397,62 @@ def test_run_turn_still_answers_when_patient_already_used_the_canonical_drug_nam
     result = run_turn(session, "布洛芬和阿司匹林一起吃可以吗", llm, kb)
     assert result.status == "answered"
     assert result.debug.hit_status == "hit"
+
+
+def test_core_entity_prefers_normalized_symptom_over_raw():
+    from app.pipeline import _core_entity
+    from app.schemas import SemanticTags, ExtractedEntities
+    tags = SemanticTags(
+        route_scope="in_scope", sub_type="department_triage", population_status="unknown",
+        extracted_entities=ExtractedEntities(
+            symptom_or_condition_raw="头疼", symptom_or_condition_normalized="头痛",
+        ),
+    )
+    assert _core_entity(tags) == "头痛"
+
+
+def test_core_entity_still_prefers_drug_name_over_symptom():
+    from app.pipeline import _core_entity
+    from app.schemas import SemanticTags, ExtractedEntities
+    tags = SemanticTags(
+        route_scope="in_scope", sub_type="drug_contraindication", population_status="unknown",
+        extracted_entities=ExtractedEntities(
+            drug_name_normalized="布洛芬",
+            symptom_or_condition_raw="头疼", symptom_or_condition_normalized="头痛",
+        ),
+    )
+    assert _core_entity(tags) == "布洛芬"
+
+
+def test_different_phrasings_of_the_same_symptom_do_not_reset_topic_turns():
+    llm = FakeLLMClient()
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "department_triage",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {"symptom_or_condition_raw": "头疼"}})
+    llm.queue_text("反复头痛建议先挂神经内科看看。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    # Keywords on the canonical term "头痛", not the colloquial "头疼" the
+    # patient actually typed -- turn 1 only hits because retrieval_query
+    # gets "头痛" appended (Task 2's second change below); turn 2 hits
+    # because "头痛" already appears literally in what the patient typed.
+    kb = [KBEntry(id="a", sub_type="department_triage", question_topic="头痛反复发作挂什么科",
+                  keywords=["头痛"], answer_body="x", source_note="演示数据")]
+    session = SessionState(session_id="x")
+    result1 = run_turn(session, "我头疼，该挂什么科", llm, kb)
+    assert result1.status == "answered"
+    assert session.topic_turns == 1
+
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "department_triage",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {"symptom_or_condition_raw": "头痛"}})
+    llm.queue_text("如果吃了止痛药还是没缓解，建议尽快就医。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    result2 = run_turn(session, "吃了止痛药头痛还是没好", llm, kb)
+    assert result2.status == "answered"
+    # "头疼" then "头痛" are the same symptom once normalized -> same
+    # topic, so this is turn 2 on the same topic, not a reset to 1.
+    assert session.topic_turns == 2

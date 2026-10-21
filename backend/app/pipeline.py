@@ -40,6 +40,7 @@ def _handoff(session: SessionState, reason: str, debug: PipelineDebugInfo, messa
 def _core_entity(tags: SemanticTags) -> Optional[str]:
     return (
         tags.extracted_entities.drug_name_normalized
+        or tags.extracted_entities.symptom_or_condition_normalized
         or tags.extracted_entities.symptom_or_condition_raw
         or tags.extracted_entities.exam_item_raw
     )
@@ -99,6 +100,8 @@ def run_turn(
 
     if tags.extracted_entities.drug_name_normalized:
         retrieval_query = f"{retrieval_query} {tags.extracted_entities.drug_name_normalized}"
+    if tags.extracted_entities.symptom_or_condition_normalized:
+        retrieval_query = f"{retrieval_query} {tags.extracted_entities.symptom_or_condition_normalized}"
 
     if tags.sub_type is not None:
         if embedding_model:

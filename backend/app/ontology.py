@@ -31,3 +31,36 @@ def normalize_drug_name(raw: Optional[str]) -> Optional[str]:
     if not raw:
         return None
     return DRUG_ALIASES.get(raw.strip())
+
+
+# Colloquial phrasings a patient might type -> the canonical term this
+# KB's department_triage/lifestyle_education entries are written
+# against (see backend/app/knowledge_base/data/department_triage.json).
+SYMPTOM_ALIASES: dict[str, str] = {
+    "头疼": "头痛",
+    "脑袋疼": "头痛",
+    "脑仁疼": "头痛",
+    "头昏": "头晕",
+    "晕眩": "头晕",
+    "眩晕": "头晕",
+    "肚子疼": "腹痛",
+    "肚子痛": "腹痛",
+    "肚疼": "腹痛",
+    "干咳": "咳嗽",
+    "咳痰": "咳嗽",
+    "起疹子": "皮疹",
+    "长疹子": "皮疹",
+    "红疙瘩": "皮疹",
+    "关节酸痛": "关节疼",
+    "骨头疼": "关节疼",
+    "发热": "发烧",
+    "高烧": "发烧",
+    "大姨妈不准": "月经不调",
+    "例假不规律": "月经不调",
+}
+
+
+def normalize_symptom(raw: Optional[str]) -> Optional[str]:
+    if not raw:
+        return None
+    return SYMPTOM_ALIASES.get(raw.strip())

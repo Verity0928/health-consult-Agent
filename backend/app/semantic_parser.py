@@ -1,5 +1,5 @@
 from app.llm_client import LLMClientProtocol, LLMParseError
-from app.ontology import normalize_drug_name
+from app.ontology import normalize_drug_name, normalize_symptom
 from app.schemas import ChatMessage, SemanticTags
 
 SEMANTIC_PARSER_SYSTEM_PROMPT = """\
@@ -98,5 +98,9 @@ def parse_semantics(message: str, history: list[ChatMessage], llm: LLMClientProt
     canonical_drug = normalize_drug_name(tags.extracted_entities.drug_name_raw)
     if canonical_drug is not None:
         tags.extracted_entities.drug_name_normalized = canonical_drug
+
+    canonical_symptom = normalize_symptom(tags.extracted_entities.symptom_or_condition_raw)
+    if canonical_symptom is not None:
+        tags.extracted_entities.symptom_or_condition_normalized = canonical_symptom
 
     return tags
