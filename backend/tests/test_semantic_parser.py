@@ -35,3 +35,26 @@ def test_parse_semantics_includes_history_in_prompt():
                ChatMessage(role="ai", content="您方便说下具体是哪种抗过敏药吗？")]
     tags = parse_semantics("氯雷他定", history, llm)
     assert tags.extracted_entities.coreference_resolved_query == "氯雷他定"
+
+
+def test_parse_semantics_normalizes_a_recognized_drug_brand_name():
+    llm = FakeLLMClient()
+    llm.queue_json({
+        "route_scope": "in_scope", "sub_type": "drug_contraindication",
+        "population_status": "unknown", "special_population_flags": [],
+        "extracted_entities": {"drug_name_raw": "芬必得", "drug_name_normalized": None},
+    })
+    tags = parse_semantics("芬必得能和阿司匹林一起吃吗", [], llm)
+    assert tags.extracted_entities.drug_name_normalized == "布洛芬"
+
+
+def test_parse_semantics_keeps_the_llms_guess_for_an_unrecognized_drug_name():
+    llm = FakeLLMClient()
+    llm.queue_json({
+        "route_scope": "in_scope", "sub_type": "drug_contraindication",
+        "population_status": "unknown", "special_population_flags": [],
+        "extracted_entities": {"drug_name_raw": "某种没听过的药",
+                                "drug_name_normalized": "模型自己猜的名字"},
+    })
+    tags = parse_semantics("某种没听过的药怎么吃", [], llm)
+    assert tags.extracted_entities.drug_name_normalized == "模型自己猜的名字"

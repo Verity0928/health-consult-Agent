@@ -1,4 +1,5 @@
 from app.llm_client import LLMClientProtocol, LLMParseError
+from app.ontology import normalize_drug_name
 from app.schemas import ChatMessage, SemanticTags
 
 SEMANTIC_PARSER_SYSTEM_PROMPT = """\
@@ -90,6 +91,12 @@ def parse_semantics(message: str, history: list[ChatMessage], llm: LLMClientProt
         f"【最近对话历史】（最近5轮）：\n{_render_history(history)}"
     )
     try:
-        return llm.complete_json(SEMANTIC_PARSER_SYSTEM_PROMPT, user_prompt, SemanticTags)
+        tags = llm.complete_json(SEMANTIC_PARSER_SYSTEM_PROMPT, user_prompt, SemanticTags)
     except LLMParseError as exc:
         raise ParseError(str(exc)) from exc
+
+    canonical_drug = normalize_drug_name(tags.extracted_entities.drug_name_raw)
+    if canonical_drug is not None:
+        tags.extracted_entities.drug_name_normalized = canonical_drug
+
+    return tags

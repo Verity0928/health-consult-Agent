@@ -97,6 +97,9 @@ def run_turn(
         retrieval_query = message
         session.topic_query = message
 
+    if tags.extracted_entities.drug_name_normalized:
+        retrieval_query = f"{retrieval_query} {tags.extracted_entities.drug_name_normalized}"
+
     if tags.sub_type is not None:
         if embedding_model:
             try:

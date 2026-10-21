@@ -346,3 +346,54 @@ def test_closed_session_returns_fixed_farewell_without_calling_llm():
     result = run_turn(session, "还有个问题", llm, _kb())
     assert result.status == "closed"
     assert result.reply == CLOSING_FAREWELL_TEXT
+
+
+def test_run_turn_appends_the_normalized_drug_name_to_the_retrieval_query(monkeypatch):
+    import app.retrieval as retrieval_mod
+    captured = {}
+    orig_search = retrieval_mod.search_knowledge_base
+
+    def capturing_search(sub_type, query, entries):
+        captured["query"] = query
+        return orig_search(sub_type, query, entries)
+
+    retrieval_mod.search_knowledge_base = capturing_search
+    try:
+        llm = FakeLLMClient()
+        llm.queue_json({"route_scope": "in_scope", "sub_type": "drug_contraindication",
+                         "population_status": "identified_general", "special_population_flags": [],
+                         "extracted_entities": {"drug_name_raw": "芬必得"}})
+        llm.queue_text("芬必得和阿司匹林一起吃要小心胃肠道刺激。")
+        llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                         "disclaimer_pass": True, "format_pass": True,
+                         "overall_pass": True, "violations": []})
+        kb = [KBEntry(id="a", sub_type="drug_contraindication", question_topic="阿司匹林和布洛芬能一起吃吗",
+                      keywords=["阿司匹林", "布洛芬"], answer_body="x", source_note="演示数据")]
+        session = SessionState(session_id="x")
+        run_turn(session, "芬必得能和阿司匹林一起吃吗", llm, kb)
+        assert "布洛芬" in captured["query"]
+    finally:
+        retrieval_mod.search_knowledge_base = orig_search
+
+
+def test_run_turn_still_answers_when_patient_already_used_the_canonical_drug_name():
+    # drug_name_raw == the canonical name itself isn't a key in
+    # DRUG_ALIASES (only brand/colloquial names are keys), so
+    # normalize_drug_name returns None here and drug_name_normalized
+    # stays whatever the LLM's own extraction produced -- typically the
+    # same canonical text, trivially. Appending it to retrieval_query is
+    # then a harmless duplicate; this proves it doesn't break matching.
+    llm = FakeLLMClient()
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "drug_contraindication",
+                     "population_status": "identified_general", "special_population_flags": [],
+                     "extracted_entities": {"drug_name_raw": "布洛芬", "drug_name_normalized": "布洛芬"}})
+    llm.queue_text("布洛芬和阿司匹林一起吃要小心胃肠道刺激。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    kb = [KBEntry(id="a", sub_type="drug_contraindication", question_topic="阿司匹林和布洛芬能一起吃吗",
+                  keywords=["阿司匹林", "布洛芬"], answer_body="x", source_note="演示数据")]
+    session = SessionState(session_id="x")
+    result = run_turn(session, "布洛芬和阿司匹林一起吃可以吗", llm, kb)
+    assert result.status == "answered"
+    assert result.debug.hit_status == "hit"
