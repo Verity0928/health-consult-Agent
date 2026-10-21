@@ -39,6 +39,20 @@ def test_ask_once_when_hit_drug_subtype_population_unknown():
     assert "patient_identity" in result.ask_missing_fact_type
 
 
+def test_ask_once_does_not_ask_for_drug_name_when_the_ontology_already_recognized_it():
+    # This is the dispatcher-level payoff of drug-name normalization: once
+    # drug_name_normalized is set (whether by the ontology or the LLM),
+    # the only remaining missing fact is patient identity.
+    session = SessionState(session_id="x")
+    result = decide_route(
+        _tags(sub_type="drug_contraindication", population_status="unknown",
+              extracted_entities=ExtractedEntities(drug_name_raw="芬必得", drug_name_normalized="布洛芬")),
+        RetrievalResult(hit_status="hit"), session,
+    )
+    assert result.route_decision == RouteDecision.ASK_ONCE
+    assert result.ask_missing_fact_type == ["patient_identity"]
+
+
 def test_handoff_when_miss():
     session = SessionState(session_id="x")
     result = decide_route(_tags(), RetrievalResult(hit_status="miss"), session)

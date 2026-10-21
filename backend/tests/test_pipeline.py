@@ -377,12 +377,11 @@ def test_run_turn_appends_the_normalized_drug_name_to_the_retrieval_query(monkey
 
 
 def test_run_turn_still_answers_when_patient_already_used_the_canonical_drug_name():
-    # drug_name_raw == the canonical name itself isn't a key in
-    # DRUG_ALIASES (only brand/colloquial names are keys), so
-    # normalize_drug_name returns None here and drug_name_normalized
-    # stays whatever the LLM's own extraction produced -- typically the
-    # same canonical text, trivially. Appending it to retrieval_query is
-    # then a harmless duplicate; this proves it doesn't break matching.
+    # DRUG_ALIASES self-maps every canonical name to itself, so
+    # drug_name_raw == the canonical name still normalizes deterministically
+    # (not left to whatever the LLM's own extraction happened to produce).
+    # Appending it to retrieval_query is then a harmless duplicate of text
+    # already in the message; this proves that doesn't break matching.
     llm = FakeLLMClient()
     llm.queue_json({"route_scope": "in_scope", "sub_type": "drug_contraindication",
                      "population_status": "identified_general", "special_population_flags": [],
@@ -397,6 +396,39 @@ def test_run_turn_still_answers_when_patient_already_used_the_canonical_drug_nam
     result = run_turn(session, "布洛芬和阿司匹林一起吃可以吗", llm, kb)
     assert result.status == "answered"
     assert result.debug.hit_status == "hit"
+
+
+def test_ask_once_follow_up_still_finds_the_entry_when_opened_with_a_brand_name():
+    # Final review (opus) caught this: the canonical drug name only gets
+    # appended to retrieval_query AFTER session.topic_query is already
+    # saved as the turn's raw text, so a brand name recognized on turn 1
+    # (e.g. "芬必得") is lost by the time the ASK_ONCE follow-up turn
+    # re-anchors retrieval to topic_query -- exactly the scenario this
+    # ontology exists to fix (population_status "unknown" on a drug
+    # sub_type is the most common real path, per dispatcher.py's
+    # POPULATION_CONFIRMATION_SUB_TYPES check).
+    llm = FakeLLMClient()
+    kb = [KBEntry(id="a", sub_type="drug_contraindication", question_topic="阿司匹林和布洛芬能一起吃吗",
+                  keywords=["阿司匹林", "布洛芬"], answer_body="一起吃可能增加胃肠道出血风险",
+                  source_note="演示数据")]
+    session = SessionState(session_id="x")
+
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "drug_contraindication",
+                     "population_status": "unknown", "special_population_flags": [],
+                     "extracted_entities": {"drug_name_raw": "芬必得"}})
+    llm.queue_text("您方便说下是您自己在吃吗？")
+    result1 = run_turn(session, "芬必得能和阿司匹林一起吃吗", llm, kb)
+    assert result1.status == "asked"
+
+    llm.queue_json({"route_scope": "in_scope", "sub_type": "drug_contraindication",
+                     "population_status": "identified_general", "special_population_flags": [],
+                     "extracted_entities": {}})
+    llm.queue_text("一起吃可能增加胃肠道出血风险。")
+    llm.queue_json({"compliance_pass": True, "grounding_pass": True,
+                     "disclaimer_pass": True, "format_pass": True,
+                     "overall_pass": True, "violations": []})
+    result2 = run_turn(session, "我自己吃的", llm, kb)
+    assert result2.status == "answered"
 
 
 def test_core_entity_prefers_normalized_symptom_over_raw():

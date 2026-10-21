@@ -92,16 +92,20 @@ def run_turn(
     # often has zero keyword overlap with the entry the original question
     # pointed at. Anchor retrieval to the question that opened the topic,
     # not this turn's raw text, so the second pass can actually resolve.
-    if is_fact_followup and session.topic_query is not None:
-        retrieval_query = f"{session.topic_query} {message}"
-    else:
-        retrieval_query = message
-        session.topic_query = message
+    is_fresh_topic = not (is_fact_followup and session.topic_query is not None)
+    retrieval_query = message if is_fresh_topic else f"{session.topic_query} {message}"
 
     if tags.extracted_entities.drug_name_normalized:
         retrieval_query = f"{retrieval_query} {tags.extracted_entities.drug_name_normalized}"
     if tags.extracted_entities.symptom_or_condition_normalized:
         retrieval_query = f"{retrieval_query} {tags.extracted_entities.symptom_or_condition_normalized}"
+
+    # Save the *augmented* query as the topic anchor, not the raw message —
+    # otherwise a canonical drug/symptom name recognized this turn (e.g. a
+    # brand name normalized to its generic name) is lost by the time a
+    # later ASK_ONCE follow-up turn re-anchors retrieval to it.
+    if is_fresh_topic:
+        session.topic_query = retrieval_query
 
     if tags.sub_type is not None:
         if embedding_model:
